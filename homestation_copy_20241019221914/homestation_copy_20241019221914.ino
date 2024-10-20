@@ -1,15 +1,19 @@
 #include "DHT.h"
 #include <Arduino.h>
 
-#define LIGHT_SENSOR_PIN 33 // ESP32 pin GIOP36 (ADC0)
+const int ldrPin = 36;
 
 DHT dht(0, DHT22);
 
 const int irSensorPin = 25;   // IR sensor pin
 int pulseCount = 0;           // Om het aantal "high" waarden bij te houden
 unsigned long startTime = 0;  // Begin tijd voor de 10 seconden
+int lightValue = 0;
 
-void checkBrighness(){
+void checkBrightness(){
+  lightValue = analogRead(ldrPin);
+  Serial.println(lightValue);
+  delay(500);
 }
 
 void checkTempHum(){
@@ -56,8 +60,5 @@ void setup() {
 }
 
 void loop() {
-  int analogValue = analogRead(LIGHT_SENSOR_PIN); // read the value on analog pin
-  Serial.print("Analog Value = ");
-  Serial.println(analogValue);   // the raw analog reading  delay(500); // small delay for readability
-  delay(500);
+  checkBrightness();
 }
