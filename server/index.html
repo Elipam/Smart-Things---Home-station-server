@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ESP Data Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 500px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>ESP8266 Sensor Data Map</h2>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      // Kaart initialiseren
+      const map = L.map("map").setView([52.3702, 4.8952], 8); // Start locatie (bijvoorbeeld Amsterdam)
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }).addTo(map);
+
+      // Functie om markers te laden van de server
+      async function loadMarkers() {
+        const response = await fetch("http://jouw_server_adres/markers");
+        const data = await response.json();
+
+        data.forEach((item) => {
+          const marker = L.marker([item.latitude, item.longitude]).addTo(map);
+          marker.bindPopup(
+            `<b>Temperatuur:</b> ${item.temperature}°C<br><b>Vochtigheid:</b> ${item.humidity}%`
+          );
+        });
+      }
+
+      loadMarkers(); // Markers laden bij het opstarten
+    </script>
+  </body>
+</html>
