@@ -1,7 +1,5 @@
 #include "DHT.h"
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
 
 // Functie om gemiddelde te berekenen
 float calculateAverage(float array[], int count)
@@ -63,7 +61,7 @@ void showDataIndex(int index1, int index2)
 const int LIGHT_SENSOR_PIN = A0;
 int lux;
 
-float checkBrightness()
+void checkBrightness()
 {
   float measurements[10];
 
@@ -95,7 +93,6 @@ float checkBrightness()
     showData(lux);
     delay(3000);
   }
-  return lux;
 }
 
 // Functie om temperatuur te meten
@@ -209,8 +206,8 @@ float checkWindSpeed()
 }
 
 // Functie om LED's te laten branden bij bepaalde weersomstandigheden
-#define RED_LED_PIN D8
-#define ORANGE_LED_PIN D4
+#define RED_LED_PIN D4
+#define ORANGE_LED_PIN D8
 #define GREEN_LED_PIN 1
 
 void weatherLED(float wind, float temp)
@@ -242,53 +239,9 @@ void weatherLED(float wind, float temp)
   }
 }
 
-// WiFi-instellingen
-const char* ssid = "De Froststreet 74";
-const char* password = "Paultje4Life";
-
-// Server-URL
-const String serverUrl = "http://192.168.68.58:5000/data";
-
-// Maak een WiFiClient object aan
-WiFiClient client;
-
-float homeStationLat = 52.01404791407739;
-float homeStationLong = 4.348757987421489;
-
-void sendData(int brightness, int temp, int hum, int wind, float lat, float longi){
-  if (WiFi.status() == WL_CONNECTED) {
-      HTTPClient http;
-
-      // Gebruik de nieuwe API: begin(WiFiClient, url)
-      http.begin(client, serverUrl);
-
-      // Voorbeelddata in JSON-formaat
-      String jsonData = "{\"brightness\": " + String(brightness) + ", \"temperature\": " + String(temp) + ", \"humidity\": " + String(hum) + 
-      ", \"wind\": " + String(wind) + ", \"latitude\": " + String(homeStationLat) + ", \"longitude\": " + String(homeStationLong) + "}";
-
-
-      // Stel headers in
-      http.addHeader("Content-Type", "application/json");
-
-      // Verstuur het POST-verzoek
-      int httpResponseCode = http.POST(jsonData);
-
-      // Controleer de HTTP-respons
-      if (httpResponseCode > 0) {
-          Serial.println("Data verzonden. HTTP response code: " + String(httpResponseCode));
-      } else {
-          Serial.println("Error met HTTP POST: " + String(http.errorToString(httpResponseCode).c_str()));
-      }
-
-      http.end(); // Sluit de HTTP-verbinding
-  } else {
-      Serial.println("Geen verbinding met WiFi");
-  }
-}
-
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   pinMode(RES_pin, OUTPUT);
   pinMode(RCK_pin, OUTPUT);
@@ -308,35 +261,26 @@ void setup()
   digitalWrite(RED_LED_PIN, LOW);
   digitalWrite(ORANGE_LED_PIN, LOW);
   digitalWrite(GREEN_LED_PIN, LOW);
-
-  // Verbind met WiFi
-  Serial.print("Verbinden met WiFi");
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-  }
-  Serial.println("\nVerbonden met WiFi!");
 }
 
 void loop()
 {
   showDataIndex(10, 1);
-  float brightness = checkBrightness();
+  checkBrightness();
 
   showDataIndex(10, 2);
-  float temperature = checkTemperature();
+  float avgTemperature = checkTemperature();
 
   showDataIndex(10, 3);
-  float humidity = checkHumidity();
+  checkHumidity();
 
   showDataIndex(10, 4);
-  float windspeed = checkWindSpeed();
+  float windsnelheid = checkWindSpeed();
 
-  weatherLED(windspeed, temperature);
-
-  sendData(brightness, temperature, humidity, windspeed, homeStationLat, homeStationLong);
+  weatherLED(windsnelheid, avgTemperature);
 
   showDataIndex(12, 12);
   delay(3000);
+
+  ESP.deepSleep(1800e6);
 }
