@@ -252,8 +252,13 @@ const String serverUrl = "http://192.168.68.58:5000/data";
 // Maak een WiFiClient object aan
 WiFiClient client;
 
+<<<<<<< HEAD
 float homeStationLat = 52.01404791407739;
 float homeStationLong = 4.348757987421489;
+=======
+float homeStationLat = 52.061380;
+float homeStationLong = 4.325377;
+>>>>>>> bd753383fc9ee11b6176d331a30d6ee4a84cc061
 
 void sendData(int brightness, int temp, int hum, int wind, float lat, float longi){
   if (WiFi.status() == WL_CONNECTED) {

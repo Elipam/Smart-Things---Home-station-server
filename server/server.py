@@ -3,11 +3,19 @@ import sqlite3
 
 app = Flask(__name__)
 
+<<<<<<< HEAD
 # Functie voor het maken van een databaseverbinding
 def connect_db():
     return sqlite3.connect('weather_data.db')
 
 # Route voor het ontvangen van data van de sensor en het opslaan in de database
+=======
+
+def connect_db():
+    return sqlite3.connect('weather_data.db')
+
+
+>>>>>>> bd753383fc9ee11b6176d331a30d6ee4a84cc061
 @app.route('/data', methods=['POST'])
 def receive_data():
     data = request.json
@@ -51,8 +59,12 @@ def receive_data():
     except Exception as e:
         print("Fout bij opslaan:", e)
         return jsonify({"message": "Error: " + str(e)}), 500
+<<<<<<< HEAD
 
 # Route voor het initialiseren van de database 
+=======
+    
+>>>>>>> bd753383fc9ee11b6176d331a30d6ee4a84cc061
 def init_db():
     conn = connect_db()
     cursor = conn.cursor()
@@ -99,13 +111,20 @@ def get_data():
 
     except Exception as e:
         return jsonify({"message": "Er ging iets mis: " + str(e)}), 500
+<<<<<<< HEAD
 
 # Route voor het ophalen van de kaartpagina 
+=======
+    
+>>>>>>> bd753383fc9ee11b6176d331a30d6ee4a84cc061
 @app.route('/')
 def map_page():
     return render_template('map.html')
 
+<<<<<<< HEAD
 # Route voor het ophalen van de data per locatie
+=======
+>>>>>>> bd753383fc9ee11b6176d331a30d6ee4a84cc061
 @app.route('/locations')
 def get_locations():
     conn = connect_db()
