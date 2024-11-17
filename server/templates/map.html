@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ESP Weather Stations</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <style>
+      #map {
+        height: 900px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+      const map = L.map("map").setView([52.01, 4.35], 13);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+
+      // Haal locaties op en voeg markers toe
+      fetch("/locations")
+        .then((response) => response.json())
+        .then((locations) => {
+          locations.forEach((loc) => {
+            const marker = L.marker([loc.lat, loc.lng]).addTo(map);
+            const date = new Date(loc.timestamp);
+            marker.bindPopup(
+              `Lichtsterkte: ${loc.avg_brightness.toFixed(0)} lux<br>
+                     Windsnelheid: ${loc.avg_wind.toFixed(1)} m/s<br>
+                     Temperatuur: ${loc.avg_temp.toFixed(1)} °C<br>
+                     Luchtvochtigheid: ${loc.avg_humidity.toFixed(0)} %<br>
+                     Laatste update: ${date.toLocaleString()}`
+            );
+          });
+        });
+    </script>
+  </body>
+</html>
